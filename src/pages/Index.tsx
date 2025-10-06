@@ -50,26 +50,26 @@ const Index = () => {
               <Zap className="w-4 h-4 mr-2" />
               Analyse de données avancée
             </Badge>
-            
+
             <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-hero bg-clip-text text-transparent leading-tight">
               Système de Visualisation de Données
             </h1>
-            
+
             <p className="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-              Transformez vos données anonymisées en insights percutants grâce à notre 
+              Transformez vos données anonymisées en insights percutants grâce à notre
               plateforme d'analyse et de visualisation intelligente.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 className="text-lg px-8 shadow-elegant"
                 onClick={() => setCurrentView('upload')}
               >
                 <Upload className="mr-2 h-5 w-5" />
                 Importer des données
               </Button>
-              
+
             </div>
           </div>
         </div>
@@ -125,7 +125,7 @@ const Index = () => {
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">Sécurité & Performance</h2>
           </div>
-          
+
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             <div className="text-center">
               <Shield className="h-16 w-16 text-chart-4 mx-auto mb-4" />
@@ -134,7 +134,7 @@ const Index = () => {
                 Chiffrement bout-en-bout et vérification d'anonymisation conforme RGPD
               </p>
             </div>
-            
+
             <div className="text-center">
               <Zap className="h-16 w-16 text-chart-5 mx-auto mb-4" />
               <h3 className="text-xl font-semibold mb-2">Traitement Rapide</h3>
@@ -149,7 +149,7 @@ const Index = () => {
       {/* Footer */}
       <footer className="py-8 px-4 border-t bg-glass backdrop-blur-sm">
         <div className="container mx-auto text-center text-muted-foreground">
-          <p>&copy; 2024 DataViz Pro. Système de visualisation de données professionnel.</p>
+          <p>&copy; 2025 DataViz Pro. Système de visualisation de données professionnel.</p>
         </div>
       </footer>
     </div>

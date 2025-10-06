@@ -5,6 +5,7 @@ import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ArrowLeft, Upload, FileText, CheckCircle, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
+import * as XLSX from "xlsx";  // Ajout pour parser Excel
 
 interface DataUploadProps {
   onDataUploaded: (data: any[]) => void;
@@ -42,18 +43,24 @@ const DataUpload = ({ onDataUploaded, onBack }: DataUploadProps) => {
     setProgress(20);
     
     try {
-      const text = await file.text();
-      setProgress(60);
-      
       let parsedData: any[] = [];
       
       if (file.name.endsWith('.csv')) {
+        const text = await file.text();
+        setProgress(60);
         parsedData = parseCSV(text);
-      } else if (file.name.endsWith('.json')) {
-        parsedData = JSON.parse(text);
+      } else if (file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
+        setProgress(60);
+        const arrayBuffer = await file.arrayBuffer();
+        const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+        const sheetName = workbook.SheetNames[0];
+        const sheet = workbook.Sheets[sheetName];
+        parsedData = XLSX.utils.sheet_to_json(sheet);
         if (!Array.isArray(parsedData)) {
-          throw new Error("Le fichier JSON doit contenir un tableau d'objets");
+          throw new Error("Le fichier Excel doit contenir un tableau de données");
         }
+      } else {
+        throw new Error("Format de fichier non supporté. Utilisez CSV ou Excel.");
       }
       
       setProgress(80);
@@ -72,6 +79,7 @@ const DataUpload = ({ onDataUploaded, onBack }: DataUploadProps) => {
     } catch (error) {
       console.error('Erreur lors du traitement du fichier:', error);
       toast.error(error instanceof Error ? error.message : "Erreur lors du traitement du fichier");
+    } finally {
       setIsProcessing(false);
       setProgress(0);
     }
@@ -84,11 +92,11 @@ const DataUpload = ({ onDataUploaded, onBack }: DataUploadProps) => {
     const files = Array.from(e.dataTransfer.files);
     if (files.length > 0) {
       const file = files[0];
-      if (file.name.endsWith('.csv') || file.name.endsWith('.json')) {
+      if (file.name.endsWith('.csv') || file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
         setUploadedFile(file);
         processFile(file);
       } else {
-        toast.error("Format de fichier non supporté. Utilisez CSV ou JSON.");
+        toast.error("Format de fichier non supporté. Utilisez CSV ou Excel.");
       }
     }
   }, []);
@@ -122,7 +130,7 @@ const DataUpload = ({ onDataUploaded, onBack }: DataUploadProps) => {
           <CardHeader>
             <CardTitle>Sélectionner un fichier</CardTitle>
             <CardDescription>
-              Formats supportés: CSV, JSON (max 20MB)
+              Formats supportés: CSV, Excel (max 20MB)
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -144,7 +152,7 @@ const DataUpload = ({ onDataUploaded, onBack }: DataUploadProps) => {
                   parcourez
                   <input
                     type="file"
-                    accept=".csv,.json"
+                    accept=".csv,.xlsx,.xls"
                     onChange={handleFileInput}
                     className="sr-only"
                     disabled={isProcessing}
@@ -152,7 +160,7 @@ const DataUpload = ({ onDataUploaded, onBack }: DataUploadProps) => {
                 </label>
               </p>
               <p className="text-sm text-muted-foreground">
-                CSV, JSON jusqu'à 20MB
+                CSV, Excel (.xlsx/.xls) jusqu'à 20MB
               </p>
             </div>
 
@@ -189,12 +197,8 @@ const DataUpload = ({ onDataUploaded, onBack }: DataUploadProps) => {
                 <span className="text-chart-1">✓</span>
               </div>
               <div className="flex justify-between">
-                <span>JSON (JavaScript Object Notation)</span>
+                <span>Excel (.xlsx/.xls)</span>
                 <span className="text-chart-1">✓</span>
-              </div>
-              <div className="flex justify-between text-muted-foreground">
-                <span>Excel (.xlsx)</span>
-                <span>Bientôt</span>
               </div>
             </CardContent>
           </Card>
